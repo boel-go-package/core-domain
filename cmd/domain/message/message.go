@@ -1,12 +1,11 @@
 package message
 
 type Message struct {
-	StatusCode    string      `json:"status_code"`
-	Status        string      `json:"status"`
-	Message       string      `json:"message"`
-	Data          interface{} `json:"data"`
-	CorrelationId string      `json:"correlation_id"`
-	Meta          interface{} `json:"meta"`
+	StatusCode string      `json:"status_code"`
+	Status     string      `json:"status"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data"`
+	Meta       interface{} `json:"meta"`
 }
 
 func ReturnMessage(status_code string, status string, message string, data interface{}, meta interface{}) *Message {
