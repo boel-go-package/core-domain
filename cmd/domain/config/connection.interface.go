@@ -15,7 +15,5 @@ type DbConfig struct {
 
 type DbConnection interface {
 	Connect() (*bun.DB, error)
-	Close() error
-	Transaction() error
 	NewConfig() DbConfig
 }
