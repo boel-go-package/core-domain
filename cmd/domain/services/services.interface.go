@@ -1,6 +1,6 @@
 package services
 
-import "github.com/muhammad-hasby-golang-package/gin-domain/cmd/domain/message"
+import "github.com/boel-go-package/core-domain/cmd/domain/message"
 
 type Services interface {
 	List() (message.Message, error)

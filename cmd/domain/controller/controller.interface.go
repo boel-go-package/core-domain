@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"github.com/boel-go-package/core-domain/cmd/domain/message"
 	"github.com/gin-gonic/gin"
-	"github.com/muhammad-hasby-golang-package/gin-domain/cmd/domain/message"
 )
 
 type Controller interface {

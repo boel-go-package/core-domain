@@ -1,4 +1,4 @@
-module github.com/muhammad-hasby-golang-package/gin-domain
+module github.com/boel-go-package/core-domain
 
 go 1.25.4
 
