@@ -1,10 +1,8 @@
 package repository
 
-import "github.com/boel-go-package/core-domain/cmd/domain/message"
-
 type Repository interface {
+	Get(id string) (interface{}, error)
 	Create(entity interface{}) error
-	Read(id int) (message.Message, error)
 	Update(entity interface{}) error
 	Delete(id int) error
 }
