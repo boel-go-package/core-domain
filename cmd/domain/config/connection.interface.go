@@ -1,7 +1,5 @@
 package config
 
-import "github.com/uptrace/bun"
-
 type DbConfig struct {
 	Host     string
 	Port     string
@@ -14,6 +12,6 @@ type DbConfig struct {
 }
 
 type DbConnection interface {
-	Connect() (*bun.DB, error)
+	Connect()
 	NewConfig() DbConfig
 }

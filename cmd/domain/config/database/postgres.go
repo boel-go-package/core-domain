@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"os"
-	"sync"
+	"time"
 
 	"github.com/boel-go-package/core-domain/cmd/domain/config"
 	"github.com/uptrace/bun"
@@ -18,21 +18,13 @@ type PostgresConnection struct {
 
 var (
 	dbInstance *bun.DB
-	once       sync.Once
-	err        error
 )
 
 func PGGetPConnection() *bun.DB {
 
-	once.Do(func() {
-		var dbPostgres config.DbConnection = PostgresConnection{}
-		dbPostgres.NewConfig()
-
-		dbInstance, err = dbPostgres.Connect()
-		if err != nil {
-			panic(err)
-		}
-	})
+	if err := dbInstance.Ping(); err != nil {
+		dbInstance = PGReconnect()
+	}
 
 	return dbInstance
 }
@@ -66,6 +58,14 @@ func PGRollbackTransaction(tx *bun.Tx) error {
 	return tx.Rollback()
 }
 
+func PGReconnect() *bun.DB {
+	var dbPostgres config.DbConnection = PostgresConnection{}
+	dbPostgres.NewConfig()
+	dbPostgres.Connect()
+
+	return dbInstance
+}
+
 // NewConfig implements config.DbConnection.
 func (p PostgresConnection) NewConfig() config.DbConfig {
 	return config.DbConfig{
@@ -81,7 +81,7 @@ func (p PostgresConnection) NewConfig() config.DbConfig {
 }
 
 // Connect implements config.DbConnection.
-func (p PostgresConnection) Connect() (*bun.DB, error) {
+func (p PostgresConnection) Connect() {
 
 	var sqldb sql.DB
 
@@ -106,8 +106,14 @@ func (p PostgresConnection) Connect() (*bun.DB, error) {
 			pgdriver.WithDSN(strUrl),
 		))
 	} else {
-		return nil, sql.ErrConnDone
+		panic(sql.ErrConnDone)
 	}
+
+	// Configure connection pool
+	sqldb.SetMaxOpenConns(25)                 // Maximum open connections
+	sqldb.SetMaxIdleConns(10)                 // Maximum idle connections
+	sqldb.SetConnMaxLifetime(5 * time.Minute) // Connection lifetime
+	sqldb.SetConnMaxIdleTime(5 * time.Minute) // Idle connection timeout
 
 	db := bun.NewDB(&sqldb, pgdialect.New())
 
@@ -120,9 +126,8 @@ func (p PostgresConnection) Connect() (*bun.DB, error) {
 	))
 
 	if err := db.Ping(); err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	dbInstance = db
-	return db, nil
 }
