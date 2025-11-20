@@ -1,28 +1,20 @@
 package middleware
 
-import (
-	"net/http"
-
-	"github.com/boel-go-package/core-domain/cmd/domain/message"
-	"github.com/gin-gonic/gin"
-)
-
 var (
-	active bool = true
+	active bool   = true
+	mss    string = "Server is not available consume request"
 )
 
-func RequestIdMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if !active {
-			res := message.Failed("503_SERVICE_UNAVAILABLE", "Server is not available consume request", nil, nil)
+func GetRequestMessage() string {
+	return mss
+}
 
-			c.JSON(http.StatusServiceUnavailable, res)
-			c.Abort()
-			return
-		}
+func SetRequestMessage(msg string) {
+	mss = msg
+}
 
-		c.Next()
-	}
+func GetRequestActive() bool {
+	return active
 }
 
 func RequestActive() {
